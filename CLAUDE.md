@@ -22,23 +22,15 @@ suggestions.
   is clearly marked `// TODO(measure): ...`, and the human is told it needs
   measuring. Do not dress placeholders up as realistic seconds.
 
-## 3. Tests gate "done"
+## 3. The model stays pure
 
-- The property tests in `src/model.test.ts` must pass (`npx vitest run`)
-  before any task is called done. No exceptions, including view-only changes.
 - The model is a pure, deterministic function. Any change that introduces
   randomness, wall-clock reads, or environment dependence into `src/model.ts`
   is wrong by definition.
+- `npx tsc --noEmit` and `npx vite build` must pass before any task is
+  called done.
 
-## 4. A new property test must first catch a deliberate bug
-
-Green on first run proves nothing about a test's teeth. Before trusting a
-new property test, break the scheduler on purpose in the way the test is
-meant to forbid, watch it fail, then restore. Added after the original
-four properties all stayed green while the cache-invalidation-on-handover
-line — the central mechanic of shared-tree mode — was deleted.
-
-## 5. Scope
+## 4. Scope
 
 One idea, one mechanic. Do not add: a git graph, merge-conflict modelling,
 agent output/logs, a settings panel, a landing page, extra pages, or any

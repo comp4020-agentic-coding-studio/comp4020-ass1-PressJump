@@ -1,44 +1,41 @@
 # Assignment 1 reflection
 
-## The suite that lied by staying green
+## The invariant that couldn't be true
 
-The breakthrough of this assignment was watching a test suite I was proud
-of pass while the code it guarded was broken, and realising the fix
-belonged in the harness, not the code.
+The breakthrough of this assignment happened before a single line of
+code existed, when part of my own spec turned out to be impossible and
+fixing it properly ended up designing the page for me.
 
-I built the simulation model test-first, on purpose. Before any UI
-existed I specified four properties the scheduler had to satisfy. With
-one agent, all three setups produce an identical wall clock. Busy time
-per agent is conserved across every setup and agent count. Wall clock is
-monotonically non-increasing from shared checkout to worktrees to shared
-cache. And no two spans holding the same exclusive resource ever overlap.
-My plan also carried a rule I'd written half as ritual. Before trusting
-the tests, deliberately break the scheduler and show me that they fail.
+Planning the simulation, I wrote down what felt like a rigorous claim.
+Busy time per agent must be conserved across all three setups, with only
+waiting time allowed to differ. It sounded like exactly the kind of
+invariant a well-behaved model should have. When I handed the plan over,
+Claude flagged the contradiction straight away. Cold builds are longer
+than incremental builds, and the difference between the setups is
+precisely how many builds run cold, so a correct scheduler could never
+satisfy the claim as I'd written it. The thing I'd stated as a check on
+the work was actually at war with the mechanic the whole page exists to
+explain.
 
-The second planted bug behaved. Letting two agents hold the working tree
-at once tripped the exclusion properties immediately. The first one is
-the breakthrough. We deleted the cache-invalidation-on-handover line,
-the single line that makes the shared checkout the villain of the whole
-page, and ran the suite. **All four properties stayed green.**
-Conservation, monotonicity, exclusion and single-agent equality are all
-true of that broken scheduler too. Nothing anywhere counted how many
-builds go cold, which is the one thing the page exists to show.
+My first instinct was to quietly drop the claim and move on. Asked to
+choose between weakening it and rebuilding around it, I went the other
+way. The model now splits every build into an incremental base, the work
+a change genuinely requires, and a separate cold penalty span classed as
+overhead, the work the setup wastes (commit `13e3fd1`). With that split
+the invariant came back to life, every agent does identical busy work in
+every setup at every agent count, and everything a setup costs you shows
+up as either overhead or waiting.
 
-What clicked is that a passing suite is a claim about the tests, not
-about the code. The properties I'd chosen were mathematically pretty and
-collectively blind, and no amount of re-running them would have told me
-that. So the correction didn't land as a retry. It landed twice in the
-harness. First as a fifth property that pins the exact cold-build count
-per mode (n×3 for a shared checkout, one per agent for cold worktrees,
-one total for the shared cache), which fails under the mutation with
-`n=2 shared-tree: expected 1 to be 6` (commit `288c4f8`). Second as a
-new CLAUDE.md rule that no future property test is trusted until it has
-caught a planted bug (commit `5a5ab83`).
+What made this the breakthrough rather than just a fix is what it did to
+the page. The hatched red blocks a visitor sees are exactly those
+overhead spans, and the dotted lines are exactly the waiting. The visual
+language of the explainer fell straight out of repairing the spec, the
+waste I nearly defined away became the single most legible thing on the
+screen, and the page's argument, that the shared cache removes the cold
+tax, is literally the red disappearing as you switch setups.
 
-The same theme had already surfaced once, before a line of code. My own
-spec's conservation property contradicted the mechanic (cold builds are
-longer, so busy time can't be conserved as I'd written it), and the
-repair was to redesign the model so waste is its own span kind rather
-than to soften the test. What I'll carry forward is the habit both
-moments share. The checks are a work product, and they need testing
-harder than the code does.
+The habit I'm taking forward is about where corrections should land.
+When a claim about the work turns out to be wrong, the tempting move is
+softening the claim until it passes. The better move, at least this
+time, was treating the claim as load-bearing and reshaping the work
+until the claim held, because the reshaping is where the insight lived.

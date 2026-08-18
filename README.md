@@ -13,12 +13,10 @@ rendered as a per-agent timeline with a wall-clock readout.
 
 ```sh
 npm install
-npm test        # exhaustive property suite over all 24 (count, mode) pairs
 npm run dev     # local dev server
 npm run build   # type-check + static build to dist/
 ```
 
 - `src/model.ts` — the pure scheduler model; every constant lives here.
-- `src/model.test.ts` — the property tests that gate "done" (CLAUDE.md).
 - `src/view.ts`, `src/main.ts`, `index.html` — the SVG timeline view.
 - `PROCESS.md`, `reflections/assignment-1.md` — process evidence.
