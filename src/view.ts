@@ -20,8 +20,8 @@ const PHASE_TITLE: Record<PhaseName, string> = {
   edit: 'edit',
   build: 'build (incremental)',
   test: 'test',
-  'cold-build': 'cold build — wasted',
-  'branch-switch': 'branch switch — wasted',
+  'cold-build': 'cold build (wasted)',
+  'branch-switch': 'branch switch (wasted)',
 };
 
 const ROW_H = 22;
@@ -140,13 +140,13 @@ export function renderLegend(el: HTMLElement): void {
           `</pattern></defs>` +
           `<rect x="0.5" y="0.5" width="17" height="11" rx="2" fill="url(#hatch-legend)" stroke="var(--border)"/>`,
       ),
-      'wasted — cold build / branch switch',
+      'wasted (cold build / branch switch)',
     ],
     [
       sw(
         `<line x1="1" y1="6" x2="17" y2="6" stroke="var(--muted)" stroke-width="2" stroke-dasharray="2 4"/>`,
       ),
-      'blocked — waiting',
+      'blocked (waiting)',
     ],
   ];
   el.innerHTML = items

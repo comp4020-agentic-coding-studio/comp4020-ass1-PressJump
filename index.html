@@ -183,10 +183,10 @@
     <i style="flex-basis:16%;background:var(--c-test)"></i>
   </div>
   <p class="tagline">
-    Pointing N coding agents at one repository doesn't buy you N× the
-    speed — they all want the same working directory. And the obvious fix,
-    a worktree each, quietly isn't enough either. The missing half is a
-    shared build cache, and this page lets you discover why.
+    Point N coding agents at one repository and you won't get N times the
+    speed. They all want the same working directory. The obvious fix, a
+    worktree each, quietly isn't enough either. The missing half is a
+    shared build cache, and this page lets you see it for yourself.
   </p>
   <a class="cue" href="#lab">Skip to the simulator ↓</a>
 </header>
@@ -194,90 +194,96 @@
 <section class="section" id="task">
   <h2>Every agent runs the same loop</h2>
   <p>
-    Each simulated agent works through three tasks, and every task has the
-    same shape:
+    Start here. Each simulated agent works through three tasks, and every
+    task has the same shape,
     <strong><span class="sw" style="background:var(--c-plan)"></span>plan</strong> →
     <strong><span class="sw" style="background:var(--c-edit)"></span>edit</strong> →
     <strong><span class="sw" style="background:var(--c-build)"></span>build</strong> →
     <strong><span class="sw" style="background:var(--c-test)"></span>test</strong>.
     Two of those steps are greedier than they look. Editing and testing
-    need the <strong>working tree</strong> — the actual files on disk — and
+    need the <strong>working tree</strong>, the actual files on disk, and
     no two agents can safely hold it at once. Building needs a CPU core,
-    a build output, and, crucially, a <strong>warm cache</strong>: the
-    first build after a cache goes cold pays a heavy penalty to recompile
-    the world.
+    a build output and a <strong>warm cache</strong>. The first build
+    after a cache goes cold pays a heavy penalty to recompile the world.
   </p>
   <p>
-    On every timeline below, real work is coloured, wasted work is
-    hatched red, and waiting is a dotted line.
+    As you read the timelines below, remember one thing. Real work is
+    coloured, wasted work is hatched red, and waiting is a dotted line.
   </p>
   <figure class="mini" data-n="1" data-mode="worktree-cold" id="mini-task">
     <svg role="img" aria-label="Timeline of a single agent's three tasks"></svg>
     <figcaption>
-      One agent, three tasks. Even alone it pays one cold build — the
-      cache starts empty. Wall clock: <strong><span data-clock></span>
-      time units</strong>.
+      One agent, three tasks. Even alone it pays one cold build, because
+      the cache starts empty. The wall clock lands at
+      <strong><span data-clock></span> time units</strong>.
     </figcaption>
   </figure>
 </section>
 
 <section class="section" id="mode-1">
-  <h2><span class="kicker">Setup 1 —</span> one shared checkout</h2>
+  <h2><span class="kicker">Setup 1 ·</span> one shared checkout</h2>
   <p>
-    The default is invisible: everyone works in the same checkout. The
-    agents don't crash into each other — they <strong>queue</strong>. Each
-    handover is a branch switch that costs a little time and, far worse,
-    dirties the build cache, so almost every build runs cold. Adding an
-    agent adds no throughput at all; it adds a place in the queue, and
-    the wall clock <strong>grows</strong> with every agent you add.
+    The default is invisible. Everyone works in the same checkout, so the
+    agents don't crash into each other, they <strong>queue</strong>.
+    Watch the rows below take turns. Each handover is a branch switch
+    that costs a little time and, far worse, dirties the build cache, so
+    almost every build runs cold. Adding an agent adds no throughput at
+    all, just a longer queue, and the wall clock <strong>grows</strong>
+    with every agent you add.
   </p>
   <figure class="mini" data-n="4" data-mode="shared-tree" id="mini-shared">
     <svg role="img" aria-label="Timeline of four agents sharing one checkout"></svg>
     <figcaption>
-      Four agents, one checkout: a rota of handovers, cold builds and
-      dotted waiting. Wall clock: <strong><span data-clock></span>
-      time units</strong>.
+      Four agents, one checkout. A rota of handovers, cold builds and
+      dotted waiting stretches the wall clock to
+      <strong><span data-clock></span> time units</strong>.
     </figcaption>
   </figure>
 </section>
 
 <section class="section" id="mode-2">
-  <h2><span class="kicker">Setup 2 —</span> a worktree each</h2>
+  <h2><span class="kicker">Setup 2 ·</span> a worktree each</h2>
   <p>
-    The fix everyone reaches for: <code>git worktree add</code>, one
-    checkout per agent. The queue disappears — and yet every worktree
-    starts empty, so <strong>every agent pays the cold build</strong> that
-    the shared checkout at least occasionally avoided. It's much faster,
-    but look at the heat: all that hatched red is the same world being
-    recompiled once per agent, and past your core count it starts landing
-    back on the wall clock.
+    Here's the fix everyone reaches for. Run <code>git worktree add</code>
+    and give each agent its own checkout. The queue disappears, and it's
+    much faster. Now look at the heat. Every worktree starts empty, so
+    <strong>every agent pays the cold build</strong> that the shared
+    checkout at least occasionally avoided. All that hatched red is the
+    same world being recompiled once per agent, and past your core count
+    it starts landing back on the wall clock.
   </p>
   <figure class="mini" data-n="4" data-mode="worktree-cold" id="mini-cold">
     <svg role="img" aria-label="Timeline of four agents with a worktree each"></svg>
     <figcaption>
-      Four worktrees: no queue, but every lane opens with a cold build.
-      Wall clock: <strong><span data-clock></span> time units</strong>.
+      Four worktrees, no queue, but every lane opens with a cold build.
+      The wall clock drops to <strong><span data-clock></span>
+      time units</strong>.
     </figcaption>
   </figure>
 </section>
 
 <section class="section" id="mode-3">
-  <h2><span class="kicker">Setup 3 —</span> worktrees <em>plus</em> a shared build cache</h2>
+  <h2><span class="kicker">Setup 3 ·</span> worktrees <em>plus</em> a shared build cache</h2>
   <p>
-    The half nobody talks about: keep the isolation, share the cache
-    (ccache, sccache, Bazel, Turborepo — pick your ecosystem's). Now
-    exactly <strong>one</strong> build in the whole system runs cold, and
-    it warms the cache for everyone; the rest do only their own
-    incremental work. At four agents the wall clock merely ties setup 2 —
-    the win hides in the missing red. Crank the agent count in the lab
-    and watch the gap open.
+    Here's the half nobody talks about. Keep the isolation, and share the
+    cache. This is the recipe products like <strong>Hyperlane</strong>
+    are built around, and there are alternatives out there too, from
+    other agent runners to wiring it up yourself with
+    <code>git worktree</code> plus whatever cache your ecosystem speaks
+    (ccache, sccache, Bazel, Turborepo). Now exactly
+    <strong>one</strong> build in the whole system runs cold, and it
+    warms the cache for everyone. The rest only do their own incremental
+    work. Notice the wall clock merely ties setup 2 at four agents. The
+    win hides in the missing red, so head to the lab and crank the agent
+    count to watch the gap open.
   </p>
   <figure class="mini" data-n="4" data-mode="worktree-shared" id="mini-cache">
     <svg role="img" aria-label="Timeline of four agents with worktrees and a shared build cache"></svg>
     <figcaption>
-      One cold build warms the cache for all four; the brief dotted waits
-      are agents letting it finish. Wall clock:
-      <strong><span data-clock></span> time units</strong>.
+      One cold build warms the cache for all four, and the brief dotted
+      waits are agents letting it finish. Same
+      <strong><span data-clock></span> time units</strong> as before, but
+      nothing is wasted.
     </figcaption>
   </figure>
 </section>
@@ -285,12 +291,12 @@
 <section class="section" id="lab">
   <h2>The lab</h2>
   <p>
-    Your turn. Drag the agent count, switch the setup, watch the wall
-    clock — and watch where the red goes.
+    Your turn. Drag the agent count, flip between setups, and keep an eye
+    on the wall clock. Then watch where the red goes.
   </p>
   <div class="controls">
     <label class="count">
-      <span class="label">Agents: <output id="agents-out">3</output></span>
+      <span class="label">Agents <output id="agents-out">3</output></span>
       <input id="agents" type="range" min="1" max="8" step="1" value="3"
              aria-label="Number of agents" />
     </label>
@@ -322,27 +328,30 @@
   <p>
     Isolation removes the queue. The shared cache removes the cold tax.
     <strong>You need both</strong>, and almost every "run more agents"
-    setup ships with only the first — or with neither.
+    setup ships with only the first, or with neither. You can buy the
+    whole recipe off the shelf, Hyperlane being one product built around
+    it, or assemble it yourself from the pieces named above. Either way,
+    now you know what to look for.
   </p>
   <p>
-    The deeper habit this page is arguing for: when parallelism
-    disappoints, go looking for the resource nobody wrote down. Here it
-    was the working directory and the build cache; in your system it will
-    be something else with the same shape.
+    And if you take one habit away from this page, take this one. When
+    parallelism disappoints, go looking for the resource nobody wrote
+    down. Here it was the working directory and the build cache. In your
+    system it will be something else with the same shape.
   </p>
   <p class="fineprint">
-    All durations are abstract time units — deliberately unmeasured
+    All durations are abstract time units, deliberately unmeasured
     placeholders, each marked <code>TODO(measure)</code> in
     <code>src/model.ts</code>. The claim is the shape of the story, not
-    the seconds. The scheduler is deterministic and property-tested:
-    busy time is provably identical across all three setups; only wasted
-    and blocked time differ.
+    the seconds. The scheduler is deterministic and property-tested.
+    Busy time is provably identical across all three setups, and only
+    wasted and blocked time differ.
   </p>
 </section>
 
 <footer>
-  A static, client-side simulation. No servers, no tracking, no network —
-  the source repository holds the model and the property tests that gate it.
+  A static, client-side simulation. No servers, no tracking, no network.
+  The source repository holds the model and the property tests that gate it.
 </footer>
 
 <script type="module" src="/src/main.ts"></script>
