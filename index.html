@@ -183,10 +183,12 @@
     <i style="flex-basis:16%;background:var(--c-test)"></i>
   </div>
   <p class="tagline">
-    Point N coding agents at one repository and you won't get N times the
-    speed. They all want the same working directory. The obvious fix, a
-    worktree each, quietly isn't enough either. The missing half is a
-    shared build cache, and this page lets you see it for yourself.
+    Pointing a bunch of coding agents at the same repository feels like it
+    should get you a bunch of times the speed. In practice it doesn't,
+    because they all end up wanting the same working directory. And the
+    obvious fix, giving each agent its own worktree, quietly isn't enough
+    on its own either. The missing half is a shared build cache, and this
+    page is a little simulation you can poke at to see why.
   </p>
   <a class="cue" href="#lab">Skip to the simulator ↓</a>
 </header>
@@ -194,8 +196,9 @@
 <section class="section" id="task">
   <h2>Every agent runs the same loop</h2>
   <p>
-    Start here. Each simulated agent works through three tasks, and every
-    task has the same shape,
+    Before comparing setups, it helps to know what one agent's work
+    actually looks like. Each simulated agent works through three tasks,
+    and every task has the same shape,
     <strong><span class="sw" style="background:var(--c-plan)"></span>plan</strong> →
     <strong><span class="sw" style="background:var(--c-edit)"></span>edit</strong> →
     <strong><span class="sw" style="background:var(--c-build)"></span>build</strong> →
@@ -207,8 +210,8 @@
     after a cache goes cold pays a heavy penalty to recompile the world.
   </p>
   <p>
-    As you read the timelines below, remember one thing. Real work is
-    coloured, wasted work is hatched red, and waiting is a dotted line.
+    As you're reading the timelines below, real work is coloured, wasted
+    work is hatched red, and waiting shows up as a dotted line.
   </p>
   <figure class="mini" data-n="1" data-mode="worktree-cold" id="mini-task">
     <svg role="img" aria-label="Timeline of a single agent's three tasks"></svg>
@@ -223,13 +226,14 @@
 <section class="section" id="mode-1">
   <h2><span class="kicker">Setup 1 ·</span> one shared checkout</h2>
   <p>
-    The default is invisible. Everyone works in the same checkout, so the
-    agents don't crash into each other, they <strong>queue</strong>.
-    Watch the rows below take turns. Each handover is a branch switch
-    that costs a little time and, far worse, dirties the build cache, so
-    almost every build runs cold. Adding an agent adds no throughput at
-    all, just a longer queue, and the wall clock <strong>grows</strong>
-    with every agent you add.
+    This is the default nobody really chooses, everyone just working in
+    the same checkout. Rather than crashing into each other, the agents
+    end up <strong>queueing</strong>, and you can see the rows below
+    politely taking turns. Every handover is a branch switch that costs a
+    little time and, rather worse, dirties the build cache, so almost
+    every build ends up running cold. Adding another agent doesn't add
+    any throughput here, just a longer queue, and the wall clock keeps
+    <strong>growing</strong> with every agent you add.
   </p>
   <figure class="mini" data-n="4" data-mode="shared-tree" id="mini-shared">
     <svg role="img" aria-label="Timeline of four agents sharing one checkout"></svg>
@@ -244,13 +248,15 @@
 <section class="section" id="mode-2">
   <h2><span class="kicker">Setup 2 ·</span> a worktree each</h2>
   <p>
-    Here's the fix everyone reaches for. Run <code>git worktree add</code>
-    and give each agent its own checkout. The queue disappears, and it's
-    much faster. Now look at the heat. Every worktree starts empty, so
-    <strong>every agent pays the cold build</strong> that the shared
-    checkout at least occasionally avoided. All that hatched red is the
-    same world being recompiled once per agent, and past your core count
-    it starts landing back on the wall clock.
+    The fix most people reach for is running <code>git worktree add</code>
+    and giving each agent its own checkout. The queue disappears and
+    things get a lot faster, which is usually where the story ends.
+    Looking a little closer at the timeline, though, there's a lot of
+    heat. Every worktree starts out empty, so <strong>every agent ends up
+    paying the cold build</strong> that the shared checkout at least
+    occasionally avoided. All that hatched red is the same world being
+    recompiled once per agent, and once you're past your core count it
+    starts landing back on the wall clock.
   </p>
   <figure class="mini" data-n="4" data-mode="worktree-cold" id="mini-cold">
     <svg role="img" aria-label="Timeline of four agents with a worktree each"></svg>
@@ -265,17 +271,18 @@
 <section class="section" id="mode-3">
   <h2><span class="kicker">Setup 3 ·</span> worktrees <em>plus</em> a shared build cache</h2>
   <p>
-    Here's the half nobody talks about. Keep the isolation, and share the
-    cache. This is the recipe products like <strong>Hyperlane</strong>
-    are built around, and there are alternatives out there too, from
-    other agent runners to wiring it up yourself with
-    <code>git worktree</code> plus whatever cache your ecosystem speaks
-    (ccache, sccache, Bazel, Turborepo). Now exactly
-    <strong>one</strong> build in the whole system runs cold, and it
-    warms the cache for everyone. The rest only do their own incremental
-    work. Notice the wall clock merely ties setup 2 at four agents. The
-    win hides in the missing red, so head to the lab and crank the agent
-    count to watch the gap open.
+    The half nobody really talks about is keeping the isolation while
+    sharing the cache. This is the recipe products like
+    <strong>Hyperlane</strong> are built around, and there are
+    alternatives out there too, from other agent runners to wiring it up
+    yourself with <code>git worktree</code> plus whatever cache your
+    ecosystem speaks (ccache, sccache, Bazel, Turborepo). With the cache
+    shared, exactly <strong>one</strong> build in the whole system runs
+    cold, and running it warms the cache for everyone else, leaving the
+    rest doing only their own incremental work. You might notice the wall
+    clock merely ties setup 2 at four agents, so the win is hiding in the
+    missing red. Heading down to the lab and cranking the agent count is
+    where the gap really opens up.
   </p>
   <figure class="mini" data-n="4" data-mode="worktree-shared" id="mini-cache">
     <svg role="img" aria-label="Timeline of four agents with worktrees and a shared build cache"></svg>
@@ -291,8 +298,9 @@
 <section class="section" id="lab">
   <h2>The lab</h2>
   <p>
-    Your turn. Drag the agent count, flip between setups, and keep an eye
-    on the wall clock. Then watch where the red goes.
+    This is the part where you get to play. Try dragging the agent count
+    around, flipping between the setups, and keeping an eye on the wall
+    clock while watching where the red goes.
   </p>
   <div class="controls">
     <label class="count">
@@ -326,18 +334,20 @@
 <section class="section" id="takeaway">
   <h2>The takeaway</h2>
   <p>
-    Isolation removes the queue. The shared cache removes the cold tax.
-    <strong>You need both</strong>, and almost every "run more agents"
-    setup ships with only the first, or with neither. You can buy the
-    whole recipe off the shelf, Hyperlane being one product built around
-    it, or assemble it yourself from the pieces named above. Either way,
-    now you know what to look for.
+    Isolation takes care of the queue, and the shared cache takes care of
+    the cold tax. <strong>You really do need both</strong>, and almost
+    every "run more agents" setup out there ships with only the first, or
+    with neither. Whether that means picking up the whole recipe off the
+    shelf, Hyperlane being one product built around it, or assembling it
+    yourself from the pieces named above, at least now you know what to
+    look for.
   </p>
   <p>
-    And if you take one habit away from this page, take this one. When
-    parallelism disappoints, go looking for the resource nobody wrote
-    down. Here it was the working directory and the build cache. In your
-    system it will be something else with the same shape.
+    If there's one habit worth taking away from all this, it's going
+    looking for the resource nobody wrote down whenever parallelism
+    disappoints. Here it happened to be the working directory and the
+    build cache. In your system it will be something else with the same
+    shape.
   </p>
   <p class="fineprint">
     All durations are abstract time units, deliberately unmeasured
