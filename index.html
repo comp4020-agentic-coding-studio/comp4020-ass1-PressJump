@@ -46,23 +46,88 @@
     }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     background: var(--page);
     color: var(--ink);
-    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
   }
-  main { max-width: 62rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
-  h1 { font-size: 1.6rem; margin: 0 0 0.4rem; }
-  .intro { color: var(--ink-2); max-width: 44rem; margin: 0 0 1.2rem; }
 
+  /* ---- hero ---- */
+  .hero {
+    max-width: 62rem; margin: 0 auto;
+    padding: clamp(3.5rem, 14vh, 8rem) 1rem 3rem;
+  }
+  .eyebrow {
+    margin: 0 0 0.8rem;
+    font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hero h1 {
+    margin: 0 0 0.4rem;
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    line-height: 1.05; letter-spacing: -0.02em;
+  }
+  .hero .strip {
+    display: flex; gap: 3px; margin: 1.1rem 0 1.3rem; max-width: 26rem;
+  }
+  .hero .strip i {
+    height: 10px; border-radius: 2px; flex: 0 0 auto;
+  }
+  .tagline {
+    margin: 0; max-width: 40rem;
+    font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+    color: var(--ink-2);
+  }
+  .cue {
+    display: inline-block; margin-top: 1.6rem;
+    color: var(--c-edit); font-weight: 600; text-decoration: none;
+  }
+  .cue:hover { text-decoration: underline; }
+
+  /* ---- sections ---- */
+  .section { max-width: 62rem; margin: 0 auto; padding: 2.2rem 1rem; }
+  .section h2 {
+    margin: 0 0 0.6rem;
+    font-size: clamp(1.35rem, 3.5vw, 1.7rem); letter-spacing: -0.01em;
+  }
+  .section h2 .kicker { color: var(--muted); font-weight: 600; }
+  .section p { max-width: 44rem; margin: 0 0 0.8rem; color: var(--ink-2); }
+  .section p strong, .section p code { color: var(--ink); }
+  .section code {
+    font-family: ui-monospace, Consolas, monospace; font-size: 0.9em;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: 0.05em 0.3em;
+  }
+  .sw {
+    display: inline-block; width: 0.65em; height: 0.65em;
+    border-radius: 2px; margin-right: 0.3em;
+  }
+  .fineprint { font-size: 0.85rem; color: var(--muted); }
+
+  /* ---- timeline figures ---- */
+  figure.mini, figure.chart {
+    margin: 1.2rem 0 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.75rem 0.75rem 0.5rem;
+  }
+  figure.mini svg, figure.chart svg { display: block; max-width: 100%; height: auto; }
+  figure.mini figcaption {
+    margin-top: 0.4rem; font-size: 0.8rem; color: var(--muted);
+  }
+  figure.mini figcaption strong { color: var(--ink-2); }
+
+  /* ---- the lab ---- */
+  #lab { scroll-margin-top: 1rem; }
   .controls {
     display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: end;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
   }
   .count { display: flex; flex-direction: column; gap: 0.25rem; min-width: 12rem; }
   .count .label { font-size: 0.85rem; color: var(--ink-2); }
-  .count output { font-weight: 700; }
+  .count output { font-weight: 700; color: var(--ink); }
   input[type='range'] { accent-color: var(--ink); width: 100%; }
   fieldset.modes { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
   fieldset.modes legend { font-size: 0.85rem; color: var(--ink-2); padding: 0 0 0.25rem; }
@@ -77,23 +142,18 @@
   .modes input:focus-visible + span { outline: 2px solid var(--c-edit); outline-offset: 2px; }
 
   .stage { display: flex; gap: 1.25rem; align-items: stretch; }
-  figure.chart {
-    flex: 1 1 auto; min-width: 0; margin: 0;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 0.75rem 0.75rem 0.5rem;
-  }
-  figure.chart svg { display: block; max-width: 100%; height: auto; }
+  figure.chart { flex: 1 1 auto; min-width: 0; margin: 0; }
   .readout {
     flex: 0 0 auto; align-self: flex-start; text-align: left;
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 8px; padding: 0.75rem 1rem; min-width: 9rem;
   }
-  .readout .hero { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
+  .readout .hero-num { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
   .readout .sub { font-size: 0.8rem; color: var(--ink-2); }
   @media (max-width: 44rem) {
     .stage { flex-direction: column-reverse; }
     .readout { display: flex; align-items: baseline; gap: 0.5rem; }
-    .readout .hero { font-size: 1.6rem; }
+    .readout .hero-num { font-size: 1.6rem; }
   }
 
   .legend { margin-top: 0.6rem; font-size: 0.8rem; color: var(--ink-2); }
@@ -102,18 +162,132 @@
     margin: 0 1rem 0.2rem 0; white-space: nowrap;
   }
   .legend svg { display: block; flex: none; }
+
+  footer {
+    max-width: 62rem; margin: 0 auto; padding: 1.5rem 1rem 3rem;
+    font-size: 0.8rem; color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>Eight agents, one repo</h1>
-  <p class="intro">
-    Pointing more coding agents at the same repository feels like free speed.
-    It isn't: they all need the same working directory, so they queue for it.
-    And the obvious fix — a worktree each — quietly isn't enough either.
-    Drag the agent count, switch the setup, and watch where the time goes.
-  </p>
 
+<header class="hero">
+  <p class="eyebrow">An interactive explainer</p>
+  <h1>Eight agents, one repo</h1>
+  <div class="strip" aria-hidden="true">
+    <i style="flex-basis:12%;background:var(--c-plan)"></i>
+    <i style="flex-basis:22%;background:var(--c-edit)"></i>
+    <i style="flex-basis:30%;background:repeating-linear-gradient(45deg,var(--c-waste),var(--c-waste) 4px,var(--c-waste-ink) 4px,var(--c-waste-ink) 6px)"></i>
+    <i style="flex-basis:12%;background:var(--c-build)"></i>
+    <i style="flex-basis:16%;background:var(--c-test)"></i>
+  </div>
+  <p class="tagline">
+    Pointing N coding agents at one repository doesn't buy you N× the
+    speed — they all want the same working directory. And the obvious fix,
+    a worktree each, quietly isn't enough either. The missing half is a
+    shared build cache, and this page lets you discover why.
+  </p>
+  <a class="cue" href="#lab">Skip to the simulator ↓</a>
+</header>
+
+<section class="section" id="task">
+  <h2>Every agent runs the same loop</h2>
+  <p>
+    Each simulated agent works through three tasks, and every task has the
+    same shape:
+    <strong><span class="sw" style="background:var(--c-plan)"></span>plan</strong> →
+    <strong><span class="sw" style="background:var(--c-edit)"></span>edit</strong> →
+    <strong><span class="sw" style="background:var(--c-build)"></span>build</strong> →
+    <strong><span class="sw" style="background:var(--c-test)"></span>test</strong>.
+    Two of those steps are greedier than they look. Editing and testing
+    need the <strong>working tree</strong> — the actual files on disk — and
+    no two agents can safely hold it at once. Building needs a CPU core,
+    a build output, and, crucially, a <strong>warm cache</strong>: the
+    first build after a cache goes cold pays a heavy penalty to recompile
+    the world.
+  </p>
+  <p>
+    On every timeline below, real work is coloured, wasted work is
+    hatched red, and waiting is a dotted line.
+  </p>
+  <figure class="mini" data-n="1" data-mode="worktree-cold" id="mini-task">
+    <svg role="img" aria-label="Timeline of a single agent's three tasks"></svg>
+    <figcaption>
+      One agent, three tasks. Even alone it pays one cold build — the
+      cache starts empty. Wall clock: <strong><span data-clock></span>
+      time units</strong>.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="section" id="mode-1">
+  <h2><span class="kicker">Setup 1 —</span> one shared checkout</h2>
+  <p>
+    The default is invisible: everyone works in the same checkout. The
+    agents don't crash into each other — they <strong>queue</strong>. Each
+    handover is a branch switch that costs a little time and, far worse,
+    dirties the build cache, so almost every build runs cold. Adding an
+    agent adds no throughput at all; it adds a place in the queue, and
+    the wall clock <strong>grows</strong> with every agent you add.
+  </p>
+  <figure class="mini" data-n="4" data-mode="shared-tree" id="mini-shared">
+    <svg role="img" aria-label="Timeline of four agents sharing one checkout"></svg>
+    <figcaption>
+      Four agents, one checkout: a rota of handovers, cold builds and
+      dotted waiting. Wall clock: <strong><span data-clock></span>
+      time units</strong>.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="section" id="mode-2">
+  <h2><span class="kicker">Setup 2 —</span> a worktree each</h2>
+  <p>
+    The fix everyone reaches for: <code>git worktree add</code>, one
+    checkout per agent. The queue disappears — and yet every worktree
+    starts empty, so <strong>every agent pays the cold build</strong> that
+    the shared checkout at least occasionally avoided. It's much faster,
+    but look at the heat: all that hatched red is the same world being
+    recompiled once per agent, and past your core count it starts landing
+    back on the wall clock.
+  </p>
+  <figure class="mini" data-n="4" data-mode="worktree-cold" id="mini-cold">
+    <svg role="img" aria-label="Timeline of four agents with a worktree each"></svg>
+    <figcaption>
+      Four worktrees: no queue, but every lane opens with a cold build.
+      Wall clock: <strong><span data-clock></span> time units</strong>.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="section" id="mode-3">
+  <h2><span class="kicker">Setup 3 —</span> worktrees <em>plus</em> a shared build cache</h2>
+  <p>
+    The half nobody talks about: keep the isolation, share the cache
+    (ccache, sccache, Bazel, Turborepo — pick your ecosystem's). Now
+    exactly <strong>one</strong> build in the whole system runs cold, and
+    it warms the cache for everyone; the rest do only their own
+    incremental work. At four agents the wall clock merely ties setup 2 —
+    the win hides in the missing red. Crank the agent count in the lab
+    and watch the gap open.
+  </p>
+  <figure class="mini" data-n="4" data-mode="worktree-shared" id="mini-cache">
+    <svg role="img" aria-label="Timeline of four agents with worktrees and a shared build cache"></svg>
+    <figcaption>
+      One cold build warms the cache for all four; the brief dotted waits
+      are agents letting it finish. Wall clock:
+      <strong><span data-clock></span> time units</strong>.
+    </figcaption>
+  </figure>
+</section>
+
+<section class="section" id="lab">
+  <h2>The lab</h2>
+  <p>
+    Your turn. Drag the agent count, switch the setup, watch the wall
+    clock — and watch where the red goes.
+  </p>
   <div class="controls">
     <label class="count">
       <span class="label">Agents: <output id="agents-out">3</output></span>
@@ -130,7 +304,6 @@
         <span>Worktrees + shared build cache</span></label>
     </fieldset>
   </div>
-
   <div class="stage">
     <figure class="chart">
       <svg id="timeline" role="img"
@@ -138,11 +311,40 @@
       <figcaption class="legend" id="legend"></figcaption>
     </figure>
     <aside class="readout">
-      <div class="hero" id="clock" aria-live="polite">–</div>
+      <div class="hero-num" id="clock" aria-live="polite">–</div>
       <div class="sub">time units of wall clock</div>
     </aside>
   </div>
-</main>
+</section>
+
+<section class="section" id="takeaway">
+  <h2>The takeaway</h2>
+  <p>
+    Isolation removes the queue. The shared cache removes the cold tax.
+    <strong>You need both</strong>, and almost every "run more agents"
+    setup ships with only the first — or with neither.
+  </p>
+  <p>
+    The deeper habit this page is arguing for: when parallelism
+    disappoints, go looking for the resource nobody wrote down. Here it
+    was the working directory and the build cache; in your system it will
+    be something else with the same shape.
+  </p>
+  <p class="fineprint">
+    All durations are abstract time units — deliberately unmeasured
+    placeholders, each marked <code>TODO(measure)</code> in
+    <code>src/model.ts</code>. The claim is the shape of the story, not
+    the seconds. The scheduler is deterministic and property-tested:
+    busy time is provably identical across all three setups; only wasted
+    and blocked time differ.
+  </p>
+</section>
+
+<footer>
+  A static, client-side simulation. No servers, no tracking, no network —
+  the source repository holds the model and the property tests that gate it.
+</footer>
+
 <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

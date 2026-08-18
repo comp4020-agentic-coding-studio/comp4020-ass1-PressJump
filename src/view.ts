@@ -49,6 +49,9 @@ export function render(
   svg: SVGSVGElement,
   result: SimResult,
   widthPx: number,
+  // Unique per SVG: several timelines share the page, and duplicate
+  // pattern ids would make every one resolve to the first.
+  patternId = 'hatch',
 ): void {
   const n = result.agentCount;
   const width = Math.max(widthPx, 240);
@@ -60,7 +63,7 @@ export function render(
 
   const parts: string[] = [];
   parts.push(
-    `<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">` +
+    `<defs><pattern id="${patternId}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">` +
       `<rect width="6" height="6" fill="var(--c-waste)"/>` +
       `<line x1="1" y1="0" x2="1" y2="6" stroke="var(--c-waste-ink)" stroke-width="2"/>` +
       `</pattern></defs>`,
@@ -101,7 +104,7 @@ export function render(
     }
     for (const s of spans) {
       const cls = PHASE_CLASS[s.phase];
-      const fill = cls === 'waste' ? 'url(#hatch)' : `var(--c-${cls})`;
+      const fill = cls === 'waste' ? `url(#${patternId})` : `var(--c-${cls})`;
       const w = Math.max((s.end - s.start) * scale - 1, 0.75);
       parts.push(
         `<rect x="${x(s.start) + 0.5}" y="${y}" width="${w}" height="${ROW_H}" rx="2" ` +
