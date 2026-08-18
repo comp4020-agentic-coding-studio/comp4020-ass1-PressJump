@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Eight agents, one repo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='2' width='9' height='4' rx='1' fill='%232a78d6'/%3E%3Crect x='1' y='9' width='14' height='4' rx='1' fill='%23d03b3b'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.1);
+    /* categorical phase colors, validated for the plan→edit→build→test→plan
+       adjacency chain (see PROCESS.md) */
+    --c-plan: #eb6834;
+    --c-edit: #2a78d6;
+    --c-build: #008300;
+    --c-test: #4a3aa7;
+    /* status color for wasted work — hatched, labelled, never color-alone */
+    --c-waste: #d03b3b;
+    --c-waste-ink: #8c1f1f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255, 255, 255, 0.1);
+      --c-plan: #d95926;
+      --c-edit: #3987e5;
+      --c-build: #008300;
+      --c-test: #9085e9;
+      --c-waste: #d03b3b;
+      --c-waste-ink: #5f1414;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 62rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 0.4rem; }
+  .intro { color: var(--ink-2); max-width: 44rem; margin: 0 0 1.2rem; }
+
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: end;
+    margin-bottom: 1rem;
+  }
+  .count { display: flex; flex-direction: column; gap: 0.25rem; min-width: 12rem; }
+  .count .label { font-size: 0.85rem; color: var(--ink-2); }
+  .count output { font-weight: 700; }
+  input[type='range'] { accent-color: var(--ink); width: 100%; }
+  fieldset.modes { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  fieldset.modes legend { font-size: 0.85rem; color: var(--ink-2); padding: 0 0 0.25rem; }
+  .modes label { cursor: pointer; }
+  .modes input { position: absolute; opacity: 0; pointer-events: none; }
+  .modes span {
+    display: inline-block; padding: 0.3rem 0.7rem; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+    font-size: 0.9rem; color: var(--ink-2);
+  }
+  .modes input:checked + span { background: var(--ink); color: var(--page); border-color: var(--ink); }
+  .modes input:focus-visible + span { outline: 2px solid var(--c-edit); outline-offset: 2px; }
+
+  .stage { display: flex; gap: 1.25rem; align-items: stretch; }
+  figure.chart {
+    flex: 1 1 auto; min-width: 0; margin: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.75rem 0.75rem 0.5rem;
+  }
+  figure.chart svg { display: block; max-width: 100%; height: auto; }
+  .readout {
+    flex: 0 0 auto; align-self: flex-start; text-align: left;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.75rem 1rem; min-width: 9rem;
+  }
+  .readout .hero { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
+  .readout .sub { font-size: 0.8rem; color: var(--ink-2); }
+  @media (max-width: 44rem) {
+    .stage { flex-direction: column-reverse; }
+    .readout { display: flex; align-items: baseline; gap: 0.5rem; }
+    .readout .hero { font-size: 1.6rem; }
+  }
+
+  .legend { margin-top: 0.6rem; font-size: 0.8rem; color: var(--ink-2); }
+  .legend .item {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    margin: 0 1rem 0.2rem 0; white-space: nowrap;
+  }
+  .legend svg { display: block; flex: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Eight agents, one repo</h1>
+  <p class="intro">
+    Pointing more coding agents at the same repository feels like free speed.
+    It isn't: they all need the same working directory, so they queue for it.
+    And the obvious fix — a worktree each — quietly isn't enough either.
+    Drag the agent count, switch the setup, and watch where the time goes.
+  </p>
+
+  <div class="controls">
+    <label class="count">
+      <span class="label">Agents: <output id="agents-out">3</output></span>
+      <input id="agents" type="range" min="1" max="8" step="1" value="3"
+             aria-label="Number of agents" />
+    </label>
+    <fieldset class="modes" id="modes">
+      <legend>Setup</legend>
+      <label><input type="radio" name="mode" value="shared-tree" checked />
+        <span>One shared checkout</span></label>
+      <label><input type="radio" name="mode" value="worktree-cold" />
+        <span>A worktree each</span></label>
+      <label><input type="radio" name="mode" value="worktree-shared" />
+        <span>Worktrees + shared build cache</span></label>
+    </fieldset>
+  </div>
+
+  <div class="stage">
+    <figure class="chart">
+      <svg id="timeline" role="img"
+           aria-label="Timeline of each agent's work, waiting and wasted time"></svg>
+      <figcaption class="legend" id="legend"></figcaption>
+    </figure>
+    <aside class="readout">
+      <div class="hero" id="clock" aria-live="polite">–</div>
+      <div class="sub">time units of wall clock</div>
+    </aside>
+  </div>
+</main>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
