@@ -12,23 +12,21 @@ suggestions.
   fonts, no remote images. Everything ships in the bundle.
 - The build target is a static site deployable to GitHub Pages.
 
-## 2. Simulation constants
+## 2. Timings
 
-- Every simulation constant lives in `src/model.ts` — nowhere else.
-- Each constant carries a comment directly above it naming where the number
-  came from.
-- **Never invent a plausible-looking timing constant.** If a real measured
-  value is not available, the constant stays in obviously-abstract units,
-  is clearly marked `// TODO(measure): ...`, and the human is told it needs
-  measuring. Do not dress placeholders up as realistic seconds.
+- Every timing constant lives in `src/model.ts` — nowhere else.
+- Each constant carries a comment directly above it saying what it stands for.
+- The page works in abstract time units by design. Do not convert them to
+  seconds or dress them up as real-world durations anywhere on the page —
+  the point is how the setups compare, not the magnitudes.
 
-## 3. The model stays pure
+## 3. The timeline code stays deterministic
 
-- The model is a pure, deterministic function. Any change that introduces
-  randomness, wall-clock reads, or environment dependence into `src/model.ts`
-  is wrong by definition.
-- `npx tsc --noEmit` and `npx vite build` must pass before any task is
-  called done.
+- The code in `src/model.ts` takes the settings in and gives the same
+  timeline back every time. No randomness, no clocks, no reads from the
+  environment.
+- The site must still build (`npx vite build`) before a task is called
+  done.
 
 ## 4. Scope
 

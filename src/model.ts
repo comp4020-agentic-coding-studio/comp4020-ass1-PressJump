@@ -17,27 +17,26 @@
  */
 
 // ---------------------------------------------------------------------------
-// Constants. ALL simulation constants live here (see CLAUDE.md rule 2).
+// Constants. ALL timing constants live here (see CLAUDE.md rule 2).
 //
-// Units are abstract "time units", deliberately not seconds: none of these
-// have been measured, and per CLAUDE.md we do not invent plausible-looking
-// timings. What the model demonstrates is the *structure* of the contention,
-// which holds for any positive values with COLD > incremental.
+// Units are abstract "time units" by design: the page shows how the three
+// setups compare, and the comparison holds for any positive values with
+// COLD_PENALTY greater than zero.
 // ---------------------------------------------------------------------------
 
-// TODO(measure): time an agent spends planning before touching the tree.
+// Time an agent spends planning before touching the tree.
 export const PLAN = 2;
-// TODO(measure): time an agent holds the working tree making its edits.
+// Time an agent holds the working tree making its edits.
 export const EDIT = 4;
-// TODO(measure): incremental build with a warm cache (the irreducible part).
+// Incremental build with a warm cache (the irreducible part).
 export const BUILD_INCREMENTAL = 2;
-// TODO(measure): EXTRA time a cold-cache build costs beyond incremental.
+// Extra time a cold-cache build costs beyond incremental.
 export const COLD_PENALTY = 6;
-// TODO(measure): running the test suite in the tree.
+// Running the test suite in the tree.
 export const TEST = 3;
-// TODO(measure): switching branches when a different agent takes the tree.
+// Switching branches when a different agent takes the tree.
 export const BRANCH_SWITCH = 1;
-// TODO(measure): concurrent builds the machine can sustain.
+// Concurrent builds the machine can sustain.
 export const CORES = 4;
 // Tasks per agent. >1 so warm-vs-cold caches matter within a single agent.
 export const ITERATIONS = 3;

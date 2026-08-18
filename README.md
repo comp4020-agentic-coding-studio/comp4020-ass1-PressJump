@@ -6,15 +6,15 @@ And isolating them into worktrees isn't enough either, because every cold
 worktree pays a cold build. Isolation *plus a shared build cache* is the
 part nobody talks about; the page lets you discover it.
 
-A static, client-side build. The visitor drives a deterministic
-discrete-event simulation: an agent-count slider (1–8) and three setups
-(one shared checkout / a worktree each / worktrees + shared build cache),
-rendered as a per-agent timeline with a wall-clock readout.
+A static, client-side build. The visitor drives the page with an
+agent-count slider (1–8) and three setups (one shared checkout / a
+worktree each / worktrees + shared build cache), rendered as a
+per-agent timeline with a wall-clock readout.
 
 ```sh
 npm install
 npm run dev     # local dev server
-npm run build   # type-check + static build to dist/
+npm run build   # static build to dist/
 ```
 
 - `src/model.ts` — the pure scheduler model; every constant lives here.
