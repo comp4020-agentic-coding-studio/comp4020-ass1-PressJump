@@ -30,7 +30,15 @@ suggestions.
   randomness, wall-clock reads, or environment dependence into `src/model.ts`
   is wrong by definition.
 
-## 4. Scope
+## 4. A new property test must first catch a deliberate bug
+
+Green on first run proves nothing about a test's teeth. Before trusting a
+new property test, break the scheduler on purpose in the way the test is
+meant to forbid, watch it fail, then restore. Added after the original
+four properties all stayed green while the cache-invalidation-on-handover
+line — the central mechanic of shared-tree mode — was deleted.
+
+## 5. Scope
 
 One idea, one mechanic. Do not add: a git graph, merge-conflict modelling,
 agent output/logs, a settings panel, a landing page, extra pages, or any
