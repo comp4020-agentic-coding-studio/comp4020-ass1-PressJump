@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import {
   BUSY_PER_AGENT,
   CORES,
+  ITERATIONS,
   MAX_AGENTS,
   MODES,
   simulate,
@@ -71,6 +72,26 @@ describe('property 3: wall clock is monotone across modes', () => {
       const cache = simulate(n, 'worktree-shared').wallClock;
       expect(shared, `n=${n} shared-tree vs worktree-cold`).toBeGreaterThanOrEqual(cold);
       expect(cold, `n=${n} worktree-cold vs worktree-shared`).toBeGreaterThanOrEqual(cache);
+    }
+  });
+});
+
+describe('property 5: cold builds happen exactly as often as each mode dictates', () => {
+  // Added after mutation testing: deleting the cache invalidation on tree
+  // handover passed properties 1-4, because nothing pinned how many builds
+  // are cold. This is the page's whole story, so it gets its own invariant.
+  it('shared tree: every post-handover build is cold; worktrees: one per agent; shared cache: one total', () => {
+    for (const n of COUNTS) {
+      const coldCount = (mode: Mode) =>
+        allSpans(simulate(n, mode)).filter((s) => s.phase === 'cold-build')
+          .length;
+      // n=1: no handovers, so only the first build is cold. n>=2: FIFO makes
+      // the tree round-robin, so every turn follows a handover and is cold.
+      expect(coldCount('shared-tree'), `n=${n} shared-tree`).toBe(
+        n === 1 ? 1 : n * ITERATIONS,
+      );
+      expect(coldCount('worktree-cold'), `n=${n} worktree-cold`).toBe(n);
+      expect(coldCount('worktree-shared'), `n=${n} worktree-shared`).toBe(1);
     }
   });
 });
