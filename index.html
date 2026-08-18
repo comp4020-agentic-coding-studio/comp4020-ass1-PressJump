@@ -89,6 +89,7 @@
 
   /* ---- sections ---- */
   .section { max-width: 62rem; margin: 0 auto; padding: 2.2rem 1rem; }
+  .section:last-of-type { padding-bottom: 4rem; }
   .section h2 {
     margin: 0 0 0.6rem;
     font-size: clamp(1.35rem, 3.5vw, 1.7rem); letter-spacing: -0.01em;
@@ -163,11 +164,6 @@
   }
   .legend svg { display: block; flex: none; }
 
-  footer {
-    max-width: 62rem; margin: 0 auto; padding: 1.5rem 1rem 3rem;
-    font-size: 0.8rem; color: var(--muted);
-    border-top: 1px solid var(--border);
-  }
 </style>
 </head>
 <body>
@@ -284,6 +280,16 @@
     missing red. Heading down to the lab and cranking the agent count is
     where the gap really opens up.
   </p>
+  <p>
+    There's a quieter cost hiding in all this isolation too, and that's
+    disk space. Giving every agent a full copy of the checkout, the
+    dependencies and the build output adds up fast. Folder syncing along
+    the lines of AFD helps here, sharing one base folder underneath all
+    the worktrees while keeping only each agent's own modifications in
+    its isolation. Eight agents end up costing you one base plus eight
+    small piles of changes rather than eight full copies, so the space
+    isn't wasted either.
+  </p>
   <figure class="mini" data-n="4" data-mode="worktree-shared" id="mini-cache">
     <svg role="img" aria-label="Timeline of four agents with worktrees and a shared build cache"></svg>
     <figcaption>
@@ -358,11 +364,6 @@
     wasted and blocked time differ.
   </p>
 </section>
-
-<footer>
-  A static, client-side simulation. No servers, no tracking, no network.
-  The source repository holds the model and the property tests that gate it.
-</footer>
 
 <script type="module" src="/src/main.ts"></script>
 </body>
