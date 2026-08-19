@@ -21,7 +21,7 @@ wanted to make my website for this assessment something that was close to
 it for displaying and showing information in a creative and interactive
 way. My first version of the page was nothing like that though, it was
 just the slider, the three setup buttons and one timeline
-([`787016f`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-PressJump/commit/787016f)),
+([`566f8e1`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-PressJump/commit/566f8e1)),
 and it worked but it read like a tool you had to already understand
 rather than a page that explains something to you.
 
@@ -30,10 +30,10 @@ not write the explanation separately from the page. Instead of putting
 screenshots or made up example numbers into the story sections, each
 section just has another copy of the timeline in it, drawn by the same
 scheduler code as the main one
-([`13e3fd1`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-PressJump/commit/13e3fd1))
+([`f997c5c`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-PressJump/commit/f997c5c))
 but locked to a fixed setting, and the numbers in the captions get
 filled in by that code as well rather than typed by hand
-([`4fc796b`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-PressJump/commit/4fc796b)).
+([`30e5a53`](https://github.com/comp4020-agentic-coding-studio/comp4020-ass1-PressJump/commit/30e5a53)).
 So when a caption says the wall clock lands at 39 time units, that
 number came from the page working it out and not from me writing it,
 and if I ever change how the timelines are worked out the captions
